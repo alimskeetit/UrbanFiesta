@@ -9,12 +9,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Entities
 {
-    internal class AppDbContext: IdentityDbContext<Citizen>
+    public class AppDbContext: IdentityDbContext<Citizen>
     {
-        DbSet<Citizen> Citizens => Set<Citizen>();
+        public DbSet<Event> Events { get; set; } = null!;
+
+        public AppDbContext()
+        {
+            
+        }
 
         public AppDbContext(DbContextOptions<AppDbContext> options): base(options)
         {
+            //Database.EnsureCreated();
         }
+
     }
 }
