@@ -1,21 +1,34 @@
+using System.Security.Claims;
+using AutoMapper;
 using Entities;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using UrbanFiesta.Mapper;
+using UrbanFiesta.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<DataSeeder>();
-
+//builder.Services.AddAutoMapper(typeof(AppMappingProfile));
+builder.Services.AddAuthorization();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly("UrbanFiesta")))
-    ;
+        b => b.MigrationsAssembly("UrbanFiesta")));
+builder.Services.AddScoped(provider => new MapperConfiguration(cfg =>
+{
+    cfg.AddProfile(new AppMappingProfile(provider.GetService<AppDbContext>()));
+}).CreateMapper());
 builder.Services.AddIdentity<Citizen, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
 
@@ -53,10 +66,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.MapGet("/", () =>
-{
-    return "Рахимов Даниел Рахматович ИНБО-07-21 Вариант №21(1)";
-});
-
+app.UseAuthorization();
+//app.MapAccountApi();
+app.MapControllers();
 app.Run();

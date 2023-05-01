@@ -30,7 +30,7 @@ namespace Entities
                     LastName = "Раздорский",
                     Patronymic = "Юрьевич",
                     Email = "vasiliy@mail.ru",
-                    UserName = "bazil",
+                    UserName = "vasiliy@mail.ru",
                     BirthDate = DateTime.Parse("25.04.2003") 
                 },
                 new()
@@ -39,7 +39,7 @@ namespace Entities
                     LastName = "Алимский",
                     Patronymic = "Денисович",
                     Email = "vanya@mail.ru",
-                    UserName = "ali",
+                    UserName = "vanya@mail.ru",
                     BirthDate = DateTime.Parse("30.08.2003")
                 }
             };

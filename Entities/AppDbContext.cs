@@ -21,7 +21,19 @@ namespace Entities
         public AppDbContext(DbContextOptions<AppDbContext> options): base(options)
         {
             //Database.EnsureCreated();
+
         }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<Citizen>()
+                .HasIndex(user => user.UserName)
+                .IsUnique();
+
+            builder.Entity<Citizen>()
+                .HasIndex(user => user.Email)
+                .IsUnique();
+        }
     }
 }
