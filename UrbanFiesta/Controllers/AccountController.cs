@@ -25,6 +25,12 @@ namespace UrbanFiesta.Controllers
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] CreateCitizenViewModel createCitizenViewModel)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(new
+                {
+                    error = ModelState.Values.SelectMany(v => v.Errors).ToList().Select(er => er.ErrorMessage),
+                    createCitizenViewModel
+                });
             var user = _mapper.Map<Citizen>(createCitizenViewModel);
             var result = await _userManager.CreateAsync(user, createCitizenViewModel.Password);
             if (!result.Succeeded) return BadRequest(
@@ -34,11 +40,11 @@ namespace UrbanFiesta.Controllers
                     createCitizenViewModel
                 });
             await _signInManager.SignInAsync(user, isPersistent: false);
-            return Ok(_mapper.Map<CitizenViewModelIgnoreLikedEvents>(user));
+            return Ok(_mapper.Map<CitizenViewModel>(user));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginCitizenViewModel loginCitizenViewModel)
+        public async Task<IActionResult> Login([FromBody] LoginCitizenViewModel loginCitizenViewModel)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState.Values);
             var result = await _signInManager.PasswordSignInAsync(
@@ -47,7 +53,7 @@ namespace UrbanFiesta.Controllers
                 isPersistent: loginCitizenViewModel.RememberMe,
                 lockoutOnFailure: false);
             var user = await _userManager.FindByNameAsync(loginCitizenViewModel.Email);
-            return result.Succeeded ? Ok(_mapper.Map<CitizenViewModelIgnoreLikedEvents>(user)) : BadRequest("Неверный логин или пароль");
+            return result.Succeeded ? Ok(_mapper.Map<CitizenViewModel>(user)) : BadRequest("Неверный логин или пароль");
         }
 
         [Authorize]
@@ -56,15 +62,6 @@ namespace UrbanFiesta.Controllers
         {
             await _signInManager.SignOutAsync();
             return Ok();
-        }
-
-        [Authorize]
-        [HttpGet]
-        public async Task<IActionResult> Edit()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            var editCitizenViewModel = _mapper.Map<EditCitizenViewModel>(user);
-            return Ok(editCitizenViewModel);
         }
 
         [Authorize]
@@ -86,14 +83,7 @@ namespace UrbanFiesta.Controllers
         }
 
         [Authorize]
-        [HttpGet]
-        public IActionResult ChangePassword()
-        {
-            return Ok(new ChangePasswordViewModel());
-        }
-
-        [Authorize]
-        [HttpPost]
+        [HttpPut]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordViewModel changePasswordViewModel)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -114,7 +104,7 @@ namespace UrbanFiesta.Controllers
         public async Task<IActionResult> About()
         {
             var user = await _userManager.GetUserAsync(User);
-            return Ok(_mapper.Map<CitizenViewModelIgnoreLikedEvents>(user));
+            return Ok(_mapper.Map<CitizenViewModel>(user));
         }
     }
 }

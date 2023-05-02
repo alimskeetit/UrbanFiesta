@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Globalization;
+using System.Runtime.CompilerServices;
 using AutoMapper;
 using Entities;
 using Entities.Models;
@@ -29,6 +30,10 @@ namespace UrbanFiesta.Mapper
                 .ReverseMap();
             CreateMap<Event, EventViewModel>().ReverseMap();
             CreateMap<Event, EventViewModelIgnoreLikes>().ReverseMap();
+            CreateMap<Event, CreateEventViewModel>()
+                .ReverseMap()
+                .ForMember(eve => eve.EndDate,
+                    opt => opt.MapFrom(createEve => createEve.EndDate == string.Empty ? null : createEve.EndDate));
         }
 
         public AppMappingProfile()

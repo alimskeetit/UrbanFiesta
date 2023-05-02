@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UrbanFiesta.Mapper;
 using UrbanFiesta.Models;
+using UrbanFiesta.Repository;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<DataSeeder>();
+builder.Services.AddScoped<EventRepository>();
 //builder.Services.AddAutoMapper(typeof(AppMappingProfile));
 builder.Services.AddAuthorization();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(

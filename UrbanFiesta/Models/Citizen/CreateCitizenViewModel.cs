@@ -1,14 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace UrbanFiesta.Models.Citizen
 {
     public class CreateCitizenViewModel
     {
-        public string Email { get; set; } = null!;
-        public string LastName { get; set; } = null!;
-        public string FirstName { get; set; } = null!;
+        [Required]
+        [EmailAddress(ErrorMessage = "Неправильно указан Email")]
+        public string Email { get; set; }
+        [Required(AllowEmptyStrings = false)]
+        public string LastName { get; set; }
+        [Required(AllowEmptyStrings = false)]
+        public string FirstName { get; set; }
         public string? Patronymic { get; set; }
-        public DateTime BirthDate { get; set; }
-        public string Password { get; set; } = null!;
+        [Required(AllowEmptyStrings = false)]
+        public string BirthDate { get; set; }
+        [Required]
+        public string Password { get; set; }
     }
 }
