@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using UrbanFiesta.Filters;
 using UrbanFiesta.Models.Citizen;
 using UrbanFiesta.Models.Event;
 using UrbanFiesta.Repository;
@@ -46,6 +47,7 @@ namespace UrbanFiesta.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [Exist<Event>]
         public async Task<IActionResult> Get(int id)
         {
             var eve = await _eventRepository.GetByIdAsync(id);
@@ -53,6 +55,7 @@ namespace UrbanFiesta.Controllers
         }
 
         [HttpPost("{eventId:int}")]
+        [Exist<Event>(pathToId: "eventId")]
         public async Task<IActionResult> Like(int eventId)
         {
             var eve = await _eventRepository.GetByIdAsync(eventId, asTracking: true);
@@ -66,6 +69,7 @@ namespace UrbanFiesta.Controllers
         }
 
         [HttpPost("{eventId:int}")]
+        [Exist<Event>(pathToId: "eventId")]
         public async Task<IActionResult> RemoveLike(int eventId)
         {
             var eve = await _eventRepository.GetByIdAsync(eventId, asTracking: true);
