@@ -11,5 +11,6 @@ namespace UrbanFiesta.Models.Citizen
         public string FirstName { get; set; } = null!;
         public string? Patronymic { get; set; }
         public DateTime BirthDate { get; set; }
+        public string[] Roles { get; set; }
     }
 }

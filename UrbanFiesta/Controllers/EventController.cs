@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -25,20 +26,6 @@ namespace UrbanFiesta.Controllers
             _userManager = userManager;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateEventViewModel createEventViewModel)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(new
-                {
-                    error = ModelState.Values.SelectMany(v => v.Errors).ToList().Select(er => er.ErrorMessage),
-                    createEventViewModel
-                });
-            var eve = _mapper.Map<Event>(createEventViewModel);
-            await _eventRepository.CreateAsync(eve);
-            return Ok(_mapper.Map<EventViewModel>(eve));
-        }
-
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -54,6 +41,7 @@ namespace UrbanFiesta.Controllers
             return Ok(_mapper.Map<EventViewModel>(eve));
         }
 
+        [Authorize(Policy = "NotBanned")]
         [HttpPost("{eventId:int}")]
         [Exist<Event>(pathToId: "eventId")]
         public async Task<IActionResult> Like(int eventId)

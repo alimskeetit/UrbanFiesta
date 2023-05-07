@@ -15,6 +15,5 @@ namespace UrbanFiesta.Models.Citizen
         public string? Patronymic { get; set; }
         [Required]
         public DateTime BirthDate { get; set; }
-        public string Password { get; set; } = string.Empty;
     }
 }

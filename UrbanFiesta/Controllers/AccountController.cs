@@ -13,32 +13,30 @@ namespace UrbanFiesta.Controllers
     {
         private readonly UserManager<Citizen> _userManager;
         private readonly SignInManager<Citizen> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
 
-        public AccountController(UserManager<Citizen> userManager, SignInManager<Citizen> signInManager, IMapper mapper)
+        public AccountController(UserManager<Citizen> userManager, SignInManager<Citizen> signInManager, IMapper mapper, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
+            _roleManager = roleManager;
         }
 
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] CreateCitizenViewModel createCitizenViewModel)
         {
             if (!ModelState.IsValid)
-                return BadRequest(new
-                {
-                    error = ModelState.Values.SelectMany(v => v.Errors).ToList().Select(er => er.ErrorMessage),
+                return BadRequest((
+                    error: ModelState.Values.SelectMany(v => v.Errors).ToList().Select(er => er.ErrorMessage), 
                     createCitizenViewModel
-                });
+                    ));
             var user = _mapper.Map<Citizen>(createCitizenViewModel);
             var result = await _userManager.CreateAsync(user, createCitizenViewModel.Password);
             if (!result.Succeeded) return BadRequest(
-                new
-                {
-                    error = result.Errors.Select(error => error.Description),
-                    createCitizenViewModel
-                });
+                (error: result.Errors.Select(error => error.Description), createCitizenViewModel));
+            await _userManager.AddToRoleAsync(user, "user");
             await _signInManager.SignInAsync(user, isPersistent: false);
             return Ok(_mapper.Map<CitizenViewModel>(user));
         }
@@ -72,12 +70,10 @@ namespace UrbanFiesta.Controllers
             _mapper.Map(editCitizenViewModel, user);
             user.UserName = user.Email;
             var result = await _userManager.UpdateAsync(user!);
-            if (!result.Succeeded) return BadRequest(
-                new
-                {
-                    error = result.Errors.Select(error => error.Description),
-                    editCitizenViewModel
-                });
+            if (!result.Succeeded) return BadRequest((
+                error: result.Errors.Select(error => error.Description), 
+                editCitizenViewModel
+                ));
             await _signInManager.RefreshSignInAsync(user!);
             return Ok(editCitizenViewModel);
         }
@@ -92,11 +88,9 @@ namespace UrbanFiesta.Controllers
                 currentPassword: changePasswordViewModel.CurrentPassword,
                 newPassword: changePasswordViewModel.NewPassword);
             if (result.Succeeded) return Ok();
-            return BadRequest(new
-            {
-                error = result.Errors.Select(error => error.Description),
-                changePasswordViewModel
-            });
+            return BadRequest((
+                error: result.Errors.Select(error => error.Description), changePasswordViewModel
+                ));
         }
 
         [Authorize]
@@ -104,7 +98,9 @@ namespace UrbanFiesta.Controllers
         public async Task<IActionResult> About()
         {
             var user = await _userManager.GetUserAsync(User);
-            return Ok(_mapper.Map<CitizenViewModel>(user));
+            var vm = _mapper.Map<CitizenViewModel>(user);
+            //vm.Roles = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().ToArray();
+            return Ok(vm);
         }
     }
 }

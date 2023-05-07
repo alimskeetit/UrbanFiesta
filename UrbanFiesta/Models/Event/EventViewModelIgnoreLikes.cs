@@ -1,4 +1,5 @@
 ﻿using Entities.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using UrbanFiesta.Models.Citizen;
 
@@ -12,6 +13,7 @@ namespace UrbanFiesta.Models.Event
         public string Address { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public string YandexMapsUrl { get; set; }
         public EventStatus Status { get; set; }
     }
 }

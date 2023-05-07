@@ -9,7 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UrbanFiesta.Mapper;
 using UrbanFiesta.Models;
+using UrbanFiesta.Models.Event;
 using UrbanFiesta.Repository;
+using UrbanFiesta.Requirements;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,14 +24,22 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<DataSeeder>();
 builder.Services.AddScoped<EventRepository>();
-//builder.Services.AddAutoMapper(typeof(AppMappingProfile));
-builder.Services.AddAuthorization();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("NotBanned", policy =>
+        policy.AddRequirements(new NotBannedRequirement()));
+});
+builder.Services.AddTransient<IAuthorizationHandler, NotBannedHandler>();
+
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("UrbanFiesta")));
 builder.Services.AddScoped(provider => new MapperConfiguration(cfg =>
 {
-    cfg.AddProfile(new AppMappingProfile(provider.GetService<AppDbContext>()));
+    cfg.AddProfile(new AppMappingProfile(
+        provider.GetService<AppDbContext>(),
+        provider.GetService<UserManager<Citizen>>()));
 }).CreateMapper());
 builder.Services.AddIdentity<Citizen, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
@@ -42,6 +52,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequireUppercase = false;
     options.Password.RequiredLength = 3;
     options.Password.RequiredUniqueChars = 0;
+    options.User.RequireUniqueEmail = true;
 });
 
 var app = builder.Build();
@@ -69,6 +80,5 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
-//app.MapAccountApi();
 app.MapControllers();
 app.Run();

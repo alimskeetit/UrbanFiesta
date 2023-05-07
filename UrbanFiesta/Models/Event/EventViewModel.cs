@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Entities.Enums;
 using UrbanFiesta.Models.Citizen;
 
@@ -13,7 +14,7 @@ namespace UrbanFiesta.Models.Event
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public EventStatus Status { get; set; }
-
+        public string YandexMapsUrl { get; set; }
         public ICollection<CitizenViewModelIgnoreLikedEvents>? Likes { get; set; }
     }
 }

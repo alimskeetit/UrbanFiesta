@@ -1,10 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Entities.Enums;
+﻿using Entities.Enums;
+using System.ComponentModel.DataAnnotations;
+using UrbanFiesta.Models.Citizen;
 
 namespace UrbanFiesta.Models.Event
 {
-    public class CreateEventViewModel
+    public class UpdateEventViewModel
     {
+        [Required]
+        public int Id { get; set; }
+
         [Required(AllowEmptyStrings = false)]
         public string Title { get; set; }
 
@@ -21,7 +25,7 @@ namespace UrbanFiesta.Models.Event
 
         [Required(AllowEmptyStrings = false)]
         public string YandexMapsUrl { get; set; }
-
+        
         public EventStatus Status { get; set; } = EventStatus.NotStarted;
     }
 }

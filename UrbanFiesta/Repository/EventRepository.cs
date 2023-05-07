@@ -20,5 +20,10 @@ namespace UrbanFiesta.Repository
         {
             return await base.GetAsync(predicate: eve => id == eve.Id, asTracking, includeProperties: eve => eve.Likes);
         }
+
+        public async Task DeleteByIdAsync(int id)
+        {
+            await base.DeleteAsync(eve => id == eve.Id);
+        }
     }
 }
