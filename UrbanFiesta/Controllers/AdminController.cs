@@ -26,7 +26,7 @@ namespace UrbanFiesta.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateEventViewModel createEventViewModel)
+        public async Task<IActionResult> CreateEvent([FromBody] CreateEventViewModel createEventViewModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest((
@@ -35,7 +35,12 @@ namespace UrbanFiesta.Controllers
                     ));
             var eve = _mapper.Map<Event>(createEventViewModel);
             await _eventRepository.CreateAsync(eve);
-            return Ok(_mapper.Map<EventViewModel>(eve));
+            var vm = _mapper.Map<EventViewModel>(eve);
+            foreach (var user in vm.Likes)
+            {
+                user.Roles = _userManager.GetRolesAsync(await _userManager.FindByIdAsync(user.Id)).GetAwaiter().GetResult().ToArray();
+            }
+            return Ok(vm);
         }
 
         [HttpPost("{email}")]
@@ -68,7 +73,13 @@ namespace UrbanFiesta.Controllers
             var eve = await _eventRepository.GetByIdAsync(updateEventViewModel.Id, asTracking: true);
             _mapper.Map(updateEventViewModel, eve);
             await _eventRepository.UpdateAsync(eve);
-            return Ok(_mapper.Map<EventViewModel>(eve));
+            var vm = _mapper.Map<EventViewModel>(eve);
+            foreach (var user in vm.Likes)
+            {
+                user.Roles = _userManager.GetRolesAsync(await _userManager.FindByIdAsync(user.Id)).GetAwaiter().GetResult().ToArray();
+            }
+
+            return Ok(vm);
         }
 
         [HttpDelete]

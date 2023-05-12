@@ -28,30 +28,42 @@ namespace UrbanFiesta.Controllers
         public async Task<IActionResult> Register([FromBody] CreateCitizenViewModel createCitizenViewModel)
         {
             if (!ModelState.IsValid)
-                return BadRequest((
-                    error: ModelState.Values.SelectMany(v => v.Errors).ToList().Select(er => er.ErrorMessage), 
+                return BadRequest(new
+                {
+                    error = ModelState.Values.SelectMany(v => v.Errors).ToList().Select(er => er.ErrorMessage),
                     createCitizenViewModel
-                    ));
+                });
             var user = _mapper.Map<Citizen>(createCitizenViewModel);
             var result = await _userManager.CreateAsync(user, createCitizenViewModel.Password);
-            if (!result.Succeeded) return BadRequest(
-                (error: result.Errors.Select(error => error.Description), createCitizenViewModel));
+            if (!result.Succeeded)
+                return BadRequest(new
+                {
+                    error = result.Errors.Select(error => error.Description),
+                    createCitizenViewModel
+                });
             await _userManager.AddToRoleAsync(user, "user");
             await _signInManager.SignInAsync(user, isPersistent: false);
-            return Ok(_mapper.Map<CitizenViewModel>(user));
+            var vm = _mapper.Map<CitizenViewModel>(user);
+            vm.Roles = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().ToArray();
+            return Ok(vm);
         }
 
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginCitizenViewModel loginCitizenViewModel)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState.Values);
+            var user = await _userManager.FindByNameAsync(loginCitizenViewModel.Email);
+            if (user == null) return BadRequest("Неправильный логин или пароль");
             var result = await _signInManager.PasswordSignInAsync(
                 userName: loginCitizenViewModel.Email,
                 password: loginCitizenViewModel.Password,
                 isPersistent: loginCitizenViewModel.RememberMe,
                 lockoutOnFailure: false);
-            var user = await _userManager.FindByNameAsync(loginCitizenViewModel.Email);
-            return result.Succeeded ? Ok(_mapper.Map<CitizenViewModel>(user)) : BadRequest("Неверный логин или пароль");
+            var vm = _mapper.Map<CitizenViewModel>(user);
+            vm.Roles = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().ToArray();
+            return result.Succeeded ? 
+                Ok(vm) 
+                : BadRequest("Неверный логин или пароль");
         }
 
         [Authorize]
@@ -70,10 +82,12 @@ namespace UrbanFiesta.Controllers
             _mapper.Map(editCitizenViewModel, user);
             user.UserName = user.Email;
             var result = await _userManager.UpdateAsync(user!);
-            if (!result.Succeeded) return BadRequest((
-                error: result.Errors.Select(error => error.Description), 
-                editCitizenViewModel
-                ));
+            if (!result.Succeeded)
+                return BadRequest(new
+                {
+                    error = result.Errors.Select(error => error.Description),
+                    editCitizenViewModel
+                });
             await _signInManager.RefreshSignInAsync(user!);
             return Ok(editCitizenViewModel);
         }
@@ -88,9 +102,11 @@ namespace UrbanFiesta.Controllers
                 currentPassword: changePasswordViewModel.CurrentPassword,
                 newPassword: changePasswordViewModel.NewPassword);
             if (result.Succeeded) return Ok();
-            return BadRequest((
-                error: result.Errors.Select(error => error.Description), changePasswordViewModel
-                ));
+            return BadRequest(new
+            {
+                error = result.Errors.Select(error => error.Description),
+                changePasswordViewModel
+            });
         }
 
         [Authorize]
@@ -99,7 +115,7 @@ namespace UrbanFiesta.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             var vm = _mapper.Map<CitizenViewModel>(user);
-            //vm.Roles = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().ToArray();
+            vm.Roles = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().ToArray();
             return Ok(vm);
         }
     }

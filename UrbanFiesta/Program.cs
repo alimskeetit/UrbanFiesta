@@ -1,18 +1,12 @@
-using System.Security.Claims;
 using AutoMapper;
 using Entities;
 using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UrbanFiesta.Mapper;
-using UrbanFiesta.Models;
-using UrbanFiesta.Models.Event;
 using UrbanFiesta.Repository;
 using UrbanFiesta.Requirements;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,9 +26,10 @@ builder.Services.AddAuthorization(options =>
 });
 builder.Services.AddTransient<IAuthorizationHandler, NotBannedHandler>();
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("UrbanFiesta")));
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddScoped(provider => new MapperConfiguration(cfg =>
 {
     cfg.AddProfile(new AppMappingProfile(
@@ -57,8 +52,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 var app = builder.Build();
 
-if (args.Length == 1 && args[0].ToLower() == "seeddata")
-    await SeedData(app);
+await SeedData(app);
 
 async Task SeedData(IHost app)
 {

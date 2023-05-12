@@ -30,7 +30,15 @@ namespace UrbanFiesta.Controllers
         public async Task<IActionResult> Get()
         {
             var events = await _eventRepository.GetAllAsync();
-            return Ok(_mapper.Map<ICollection<EventViewModel>>(events));
+            var vms = _mapper.Map<ICollection<EventViewModel>>(events);
+            foreach (var vm in vms)
+            {
+                foreach (var user in vm.Likes)
+                {
+                    user.Roles = _userManager.GetRolesAsync(await _userManager.FindByIdAsync(user.Id)).GetAwaiter().GetResult().ToArray();
+                }
+            }
+            return Ok(vms);
         }
 
         [HttpGet("{id:int}")]
@@ -38,7 +46,12 @@ namespace UrbanFiesta.Controllers
         public async Task<IActionResult> Get(int id)
         {
             var eve = await _eventRepository.GetByIdAsync(id);
-            return Ok(_mapper.Map<EventViewModel>(eve));
+            var vm = _mapper.Map<EventViewModel>(eve);
+            foreach (var user in vm.Likes)
+            {
+                user.Roles = _userManager.GetRolesAsync(await _userManager.FindByIdAsync(user.Id)).GetAwaiter().GetResult().ToArray();
+            }
+            return Ok(vm);
         }
 
         [Authorize(Policy = "NotBanned")]
@@ -48,12 +61,14 @@ namespace UrbanFiesta.Controllers
         {
             var eve = await _eventRepository.GetByIdAsync(eventId, asTracking: true);
             var citizen = await _userManager.GetUserAsync(User);
-            
-            if (eve.Likes.Contains(citizen)) return Ok(_mapper.Map<EventViewModel>(eve));
-            
             eve.Likes.Add(citizen);
             await _eventRepository.UpdateAsync(eve);
-            return Ok(_mapper.Map<EventViewModel>(eve));
+            var vm = _mapper.Map<EventViewModel>(eve);
+            foreach (var user in vm.Likes)
+            {
+                user.Roles = _userManager.GetRolesAsync(await _userManager.FindByIdAsync(user.Id)).GetAwaiter().GetResult().ToArray();
+            }
+            return Ok(vm);
         }
 
         [HttpPost("{eventId:int}")]
@@ -64,7 +79,12 @@ namespace UrbanFiesta.Controllers
             var citizen = await _userManager.GetUserAsync(User);
             eve.Likes.Remove(citizen);
             await _eventRepository.UpdateAsync(eve);
-            return Ok(_mapper.Map<EventViewModel>(eve));
+            var vm = _mapper.Map<EventViewModel>(eve);
+            foreach (var user in vm.Likes)
+            {
+                user.Roles = _userManager.GetRolesAsync(await _userManager.FindByIdAsync(user.Id)).GetAwaiter().GetResult().ToArray();
+            }
+            return Ok(vm);
         }
     }
 }

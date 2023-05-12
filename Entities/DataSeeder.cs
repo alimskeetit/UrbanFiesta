@@ -34,7 +34,7 @@ namespace Entities
                     Patronymic = "Юрьевич",
                     Email = "vasiliy@mail.ru",
                     UserName = "vasiliy@mail.ru",
-                    BirthDate = DateTime.Parse("25.04.2003")
+                    BirthDate = DateTime.Parse("2003-04-25")
                 },
                 new()
                 {
@@ -43,7 +43,7 @@ namespace Entities
                     Patronymic = "Денисович",
                     Email = "vanya@mail.ru",
                     UserName = "vanya@mail.ru",
-                    BirthDate = DateTime.Parse("30.08.2003")
+                    BirthDate = DateTime.Parse("2003-08-30")
                 }
             };
             await _userManager.CreateAsync(citizens[0], "123");

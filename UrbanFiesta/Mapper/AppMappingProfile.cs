@@ -20,10 +20,9 @@ namespace UrbanFiesta.Mapper
             UserManager<Citizen>? userManager)
         {
             _context = context;
-            Func<Citizen, string[]> a = Expression;
+
             CreateMap<Citizen, CitizenViewModel>()
                 .ForMember(dest => dest.LikedEvents, opt => opt.MapFrom(src => _context.Entry(src).Collection(c => c.LikedEvents).Query().ToList()))
-                .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => _userManager.GetRolesAsync(src).Result))
                 .ReverseMap();
             CreateMap<Citizen, LoginCitizenViewModel>()
                 .ReverseMap();
