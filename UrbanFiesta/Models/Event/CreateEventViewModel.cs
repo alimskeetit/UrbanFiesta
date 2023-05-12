@@ -20,7 +20,7 @@ namespace UrbanFiesta.Models.Event
         public string? EndDate { get; set; }
 
         [Required(AllowEmptyStrings = false)]
-        public string YandexMapsUrl { get; set; }
+        public string Coordinates { get; set; }
 
         public EventStatus Status { get; set; } = EventStatus.NotStarted;
     }

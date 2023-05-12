@@ -21,8 +21,9 @@ namespace Entities.Models
         [Required]
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public string Coordinates { get; set; }
         public EventStatus Status { get; set; }
-        public string Coordinates;
+        
         public ICollection<Citizen>? Likes { get; set; }
     }
 }

@@ -20,4 +20,4 @@ RUN dotnet publish "UrbanFiesta.csproj" -c Release -o /app/publish /p:UseAppHost
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-CMD ["dotnet", "UrbanFiesta.dll", "seeddata"]
+ENTRYPOINT ["dotnet", "UrbanFiesta.dll"]
