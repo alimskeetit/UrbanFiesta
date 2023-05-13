@@ -13,11 +13,6 @@ namespace Entities
     {
         public DbSet<Event> Events { get; set; } = null!;
 
-        public AppDbContext()
-        {
-            
-        }
-
         public AppDbContext(DbContextOptions<AppDbContext> options): base(options)
         {
             Database.EnsureCreated();

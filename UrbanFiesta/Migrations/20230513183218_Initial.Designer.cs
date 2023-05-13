@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace UrbanFiesta.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230512184435_Initial")]
+    [Migration("20230513183218_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

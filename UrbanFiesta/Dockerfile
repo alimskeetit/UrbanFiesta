@@ -7,8 +7,8 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["UrbanFiesta/UrbanFiesta.csproj", "UrbanFiesta/"]
-COPY ["Entities/Entities.csproj", "Entities/"]
+COPY ["/UrbanFiesta/UrbanFiesta.csproj", "UrbanFiesta/"]
+COPY ["/Entities/Entities.csproj", "Entities/"]
 RUN dotnet restore "UrbanFiesta/UrbanFiesta.csproj"
 COPY . .
 WORKDIR "/src/UrbanFiesta"
