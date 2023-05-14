@@ -14,6 +14,6 @@ namespace UrbanFiesta.Models.Citizen
         public DateTime BirthDate { get; set; }
         public string[] Roles { get; set; }
 
-        public ICollection<EventViewModelIgnoreLikes>? LikedEvents { get; set; }
+        public ICollection<EventViewModel>? LikedEvents { get; set; }
     }
 }

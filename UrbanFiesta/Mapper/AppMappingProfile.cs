@@ -43,19 +43,29 @@ namespace UrbanFiesta.Mapper
                 .ForMember(eve => eve.Coordinates,
                     opt => opt.MapFrom(eveModel => string.Join('|', eveModel.Coordinates)));
 
-            CreateMap<Event, EventViewModelIgnoreLikes>()
-                .ForMember(eveModel => eveModel.Coordinates,
-                    opt => opt.Ignore())
-                .ReverseMap();
+            //CreateMap<Event, EventViewModelIgnoreLikes>()
+            //    .ForMember(eveModel => eveModel.Coordinates,
+            //        opt => opt.Ignore())
+            //    .ReverseMap();
                 //.ForMember(eve => eve.Coordinates,
                 //    opt => opt.MapFrom(eveModel => string.Join('|', eveModel.Coordinates)));
-            
-            CreateMap<Event, CommandEventViewModel>().ReverseMap()
-                .ForMember(eve => eve.EndDate,
-                    opt => opt.MapFrom(commandEve => commandEve.EndDate == string.Empty ? null : commandEve.EndDate))
-                .ForMember(eve => eve.Coordinates,
-                    opt => opt.MapFrom(commandEve => string.Join('|', commandEve.Coordinates)));
-            //CreateMap<Event, CreateEventViewModel>()
+
+                CreateMap<Event, CommandEventViewModel>().ReverseMap()
+                    .ForMember(eve => eve.EndDate,
+                        opt => opt.MapFrom(commandEve =>
+                            commandEve.EndDate == string.Empty ? null : commandEve.EndDate))
+                    .ForMember(eve => eve.Coordinates,
+                        opt => opt.MapFrom(commandEve => string.Join('|', commandEve.Coordinates)))
+                    .ReverseMap()
+                    .ForMember(commandEve => commandEve.Coordinates,
+                        opt => opt.MapFrom(eve =>
+                            eve.Coordinates.Split(new[] { '|' }).Select(coord => double.Parse(coord)).ToArray()));
+                
+                CreateMap<Event, UpdateEventViewModel>()
+                    .ForMember(commandEve => commandEve.Coordinates,
+                        opt => opt.MapFrom(eve =>
+                            eve.Coordinates.Split(new[] { '|' }).Select(coord => double.Parse(coord)).ToArray()));
+                //CreateMap<Event, CreateEventViewModel>()
             //    .ReverseMap()
             //    .ForMember(eve => eve.EndDate,
             //        opt => opt.MapFrom(createEve => createEve.EndDate == string.Empty ? null : createEve.EndDate));

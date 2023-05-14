@@ -66,6 +66,14 @@ namespace UrbanFiesta.Controllers
             return Ok($"Пользователь с email {email} разбанен");
         }
 
+        [HttpGet]
+        [Exist<Event>(pathToId: "eventId")]
+        public async Task<IActionResult> UpdateEvent(int eventId)
+        {
+            var eve = await _eventRepository.GetByIdAsync(eventId, asTracking: true);
+            return Ok(_mapper.Map<UpdateEventViewModel>(eve));
+        }
+
         [HttpPut]
         [Exist<Event>(pathToId: "updateEventViewModel.Id")]
         public async Task<IActionResult> UpdateEvent([FromBody] UpdateEventViewModel updateEventViewModel)
@@ -74,11 +82,6 @@ namespace UrbanFiesta.Controllers
             _mapper.Map(updateEventViewModel, eve);
             await _eventRepository.UpdateAsync(eve);
             var vm = _mapper.Map<EventViewModel>(eve);
-            foreach (var user in vm.Likes)
-            {
-                user.Roles = _userManager.GetRolesAsync(await _userManager.FindByIdAsync(user.Id)).GetAwaiter().GetResult().ToArray();
-            }
-
             return Ok(vm);
         }
 
