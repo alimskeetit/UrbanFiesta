@@ -47,10 +47,6 @@ namespace UrbanFiesta.Controllers
         {
             var eve = await _eventRepository.GetByIdAsync(id);
             var vm = _mapper.Map<EventViewModel>(eve);
-            foreach (var user in vm.Likes)
-            {
-                user.Roles = _userManager.GetRolesAsync(await _userManager.FindByIdAsync(user.Id)).GetAwaiter().GetResult().ToArray();
-            }
             return Ok(vm);
         }
 
@@ -61,13 +57,10 @@ namespace UrbanFiesta.Controllers
         {
             var eve = await _eventRepository.GetByIdAsync(eventId, asTracking: true);
             var citizen = await _userManager.GetUserAsync(User);
+            citizen.Roles = (await _userManager.GetRolesAsync(citizen)).ToArray();
             eve.Likes.Add(citizen);
             await _eventRepository.UpdateAsync(eve);
             var vm = _mapper.Map<EventViewModel>(eve);
-            foreach (var user in vm.Likes)
-            {
-                user.Roles = _userManager.GetRolesAsync(await _userManager.FindByIdAsync(user.Id)).GetAwaiter().GetResult().ToArray();
-            }
             return Ok(vm);
         }
 
@@ -80,10 +73,6 @@ namespace UrbanFiesta.Controllers
             eve.Likes.Remove(citizen);
             await _eventRepository.UpdateAsync(eve);
             var vm = _mapper.Map<EventViewModel>(eve);
-            foreach (var user in vm.Likes)
-            {
-                user.Roles = _userManager.GetRolesAsync(await _userManager.FindByIdAsync(user.Id)).GetAwaiter().GetResult().ToArray();
-            }
             return Ok(vm);
         }
     }

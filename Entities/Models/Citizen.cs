@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,5 +18,7 @@ namespace Entities.Models
         public DateTime BirthDate { get; set; }
         public ICollection<Event>? LikedEvents { get; set; }
         public bool IsBanned { get; set; }
+        [NotMapped]
+        public string[] Roles { get; set; }
     }
 }
