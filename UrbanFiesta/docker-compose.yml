@@ -13,8 +13,8 @@ services:
     ports:
      - "8088:80"
     build:
-     context: .
-     dockerfile: Dockerfile
+     context: ../
+     dockerfile: UrbanFiesta/Dockerfile
     environment:
      - ConnectionStrings__DefaultConnection=Server=app_db;Port=5432;Database=UrbanFiesta;Username=postgres;Password=postgres
      - ASPNETCORE_URLS=http://+:80
