@@ -34,7 +34,7 @@ namespace UrbanFiesta.Migrations
 
                     b.HasIndex("LikesId");
 
-                    b.ToTable("CitizenEvent");
+                    b.ToTable("CitizenEvent", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Models.Citizen", b =>
@@ -162,7 +162,7 @@ namespace UrbanFiesta.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Events");
+                    b.ToTable("Events", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

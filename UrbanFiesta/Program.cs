@@ -50,6 +50,8 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = true;
 });
 
+builder.Services.AddCors();
+
 var app = builder.Build();
 
 await SeedData(app);
@@ -73,7 +75,8 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
+app.UseCors(builder => builder.AllowAnyOrigin());
 app.UseAuthorization();
 app.MapControllers();
-app.MapGet("/", () => "Здарова Вася!");
+app.MapGet("/", () => "3darova Bazil!");
 app.Run();

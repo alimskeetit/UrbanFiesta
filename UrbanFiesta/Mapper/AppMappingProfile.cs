@@ -35,15 +35,23 @@ namespace UrbanFiesta.Mapper
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email));
             CreateMap<Citizen, EditCitizenViewModel>()
                 .ReverseMap();
-            CreateMap<Event, EventViewModel>().ReverseMap();
+            CreateMap<Event, EventViewModel>()
+                .ForMember(eveModel => eveModel.Coordinates,
+                    opt => opt.MapFrom(eve => eve.Coordinates.Split(new []{'|'}).Select(coord => double.Parse(coord)).ToArray()))
+                .ReverseMap();
             CreateMap<Event, EventViewModelIgnoreLikes>().ReverseMap();
-            CreateMap<Event, CreateEventViewModel>()
-                .ReverseMap()
+            CreateMap<Event, CommandEventViewModel>().ReverseMap()
                 .ForMember(eve => eve.EndDate,
-                    opt => opt.MapFrom(createEve => createEve.EndDate == string.Empty ? null : createEve.EndDate));
-            CreateMap<Event, UpdateEventViewModel>().ReverseMap()
-                .ForMember(eve => eve.EndDate,
-                    opt => opt.MapFrom(createEve => createEve.EndDate == string.Empty ? null : createEve.EndDate));
+                    opt => opt.MapFrom(commandEve => commandEve.EndDate == string.Empty ? null : commandEve.EndDate))
+                .ForMember(eve => eve.Coordinates,
+                    opt => opt.MapFrom(commandEve => string.Join('|', commandEve.Coordinates)));
+            //CreateMap<Event, CreateEventViewModel>()
+            //    .ReverseMap()
+            //    .ForMember(eve => eve.EndDate,
+            //        opt => opt.MapFrom(createEve => createEve.EndDate == string.Empty ? null : createEve.EndDate));
+            //CreateMap<Event, UpdateEventViewModel>().ReverseMap()
+            //    .ForMember(eve => eve.EndDate,
+            //        opt => opt.MapFrom(createEve => createEve.EndDate == string.Empty ? null : createEve.EndDate));
         }
 
         private string[] Expression(Citizen citizen)

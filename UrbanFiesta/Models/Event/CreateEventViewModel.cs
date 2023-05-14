@@ -1,27 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Dynamic;
+using System.Text.Json.Serialization;
 using Entities.Enums;
 
 namespace UrbanFiesta.Models.Event
 {
-    public class CreateEventViewModel
+    public class CreateEventViewModel: CommandEventViewModel
     {
-        [Required(AllowEmptyStrings = false)]
-        public string Title { get; set; }
-
-        [Required(AllowEmptyStrings = false)]
-        public string Description { get; set; }
-
-        [Required(AllowEmptyStrings = false)]
-        public string Address { get; set; }
-
-        [Required(AllowEmptyStrings = false)]
-        public string StartDate { get; set; }
-
-        public string? EndDate { get; set; }
-
-        [Required(AllowEmptyStrings = false)]
-        public string Coordinates { get; set; }
-
-        public EventStatus Status { get; set; } = EventStatus.NotStarted;
+        [JsonIgnore]
+        public new int Id { get; set; }
     }
 }

@@ -14,7 +14,8 @@ namespace UrbanFiesta.Models.Event
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public EventStatus Status { get; set; }
-        public string Coordinates { get; set; }
+        public double[] Coordinates { get; set; }
+        public string PosterUrl { get; set; }
         public ICollection<CitizenViewModelIgnoreLikedEvents>? Likes { get; set; }
     }
 }

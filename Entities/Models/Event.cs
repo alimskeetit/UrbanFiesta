@@ -17,11 +17,11 @@ namespace Entities.Models
         public string Description { get; set; }
         [Required]
         public string Address { get; set; }
-        public string? PosterUrl { get; set; }
         [Required]
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public string Coordinates { get; set; }
+        public string? PosterUrl { get; set; }
         public EventStatus Status { get; set; }
         
         public ICollection<Citizen>? Likes { get; set; }
