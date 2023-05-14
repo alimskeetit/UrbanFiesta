@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿
+using AutoMapper;
 using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -26,20 +27,23 @@ namespace UrbanFiesta.Controllers
             _userManager = userManager;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
+        [HttpGet("{count:int}/{page:int}/{sortByDate:bool}")]
+        public async Task<IActionResult> Get(bool sortByDate = true, int count = 0, int page = 0)
         {
+            if (count < 0) return BadRequest("count должен быть >= 0");
+            if (page == 0) page = 1;
             var events = await _eventRepository.GetAllAsync();
-            var vms = _mapper.Map<ICollection<EventViewModel>>(events);
-            foreach (var vm in vms)
-            {
-                foreach (var user in vm.Likes)
-                {
-                    user.Roles = _userManager.GetRolesAsync(await _userManager.FindByIdAsync(user.Id)).GetAwaiter().GetResult().ToArray();
-                }
-            }
+            if (sortByDate)
+                events = events.OrderBy(eve => eve.StartDate).ToList();
+            var vms = _mapper.Map<ICollection<EventViewModel>>(
+                (page < 0
+                    ? events.Reverse()
+                    : events)
+                .Skip((int.Abs(page) - 1) * count)
+                .Take(count).ToList());
             return Ok(vms);
         }
+
 
         [HttpGet("{id:int}")]
         [Exist<Event>]
