@@ -73,11 +73,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
- app.UseCors(builder => builder
-     .AllowAnyOrigin()
-     .AllowAnyMethod()
-     .AllowAnyHeader());
+//app.UseHttpsRedirection();
+app.UseCors(builder => builder
+    .WithOrigins(Environment.GetEnvironmentVariable("ORIGIN"))
+    .AllowCredentials()
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+);
+
 app.UseAuthorization();
 app.MapControllers();
 app.MapGet("/", () => "3darova Bazil!");
