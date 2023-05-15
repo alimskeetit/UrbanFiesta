@@ -12,6 +12,7 @@ services:
     container_name: urbanfiesta_services
     ports:
      - "8088:80"
+     - "8443:443"  
     build:
      context: .
      dockerfile: Dockerfile
