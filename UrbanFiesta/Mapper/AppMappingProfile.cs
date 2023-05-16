@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using AutoMapper;
 using Entities;
+using Entities.Enums;
 using Entities.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -50,17 +51,21 @@ namespace UrbanFiesta.Mapper
                 //.ForMember(eve => eve.Coordinates,
                 //    opt => opt.MapFrom(eveModel => string.Join('|', eveModel.Coordinates)));
 
-                CreateMap<Event, CommandEventViewModel>().ReverseMap()
+                CreateMap<Event, CommandEventViewModel>()
+                    .ReverseMap()
                     .ForMember(eve => eve.EndDate,
                         opt => opt.MapFrom(commandEve =>
                             commandEve.EndDate == string.Empty ? null : commandEve.EndDate))
                     .ForMember(eve => eve.Coordinates,
                         opt => opt.MapFrom(commandEve => string.Join('|', commandEve.Coordinates)))
+                    .ForMember(eve => eve.Status,
+                        opt => opt.MapFrom(commandEve => EventStatus.NotStarted))
                     .ReverseMap()
                     .ForMember(commandEve => commandEve.Coordinates,
                         opt => opt.MapFrom(eve =>
                             eve.Coordinates.Split(new[] { '|' }).Select(coord => double.Parse(coord)).ToArray()));
-                
+                    
+
                 CreateMap<Event, UpdateEventViewModel>()
                     .ForMember(commandEve => commandEve.Coordinates,
                         opt => opt.MapFrom(eve =>

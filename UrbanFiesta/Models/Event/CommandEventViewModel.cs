@@ -25,6 +25,5 @@ namespace UrbanFiesta.Models.Event
         [Required] 
         public double[] Coordinates { get; set; }
         public string PosterUrl { get; set; }
-        public EventStatus Status { get; set; } = EventStatus.NotStarted;
     }
 }

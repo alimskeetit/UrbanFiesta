@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Tracing;
 using AutoMapper;
+using Entities.Enums;
 using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -29,11 +30,18 @@ namespace UrbanFiesta.Controllers
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventViewModel createEventViewModel)
         {
             if (!ModelState.IsValid)
-                return BadRequest((
-                    error: ModelState.Values.SelectMany(v => v.Errors).ToList().Select(er => er.ErrorMessage), 
+                return BadRequest(new
+                {
+                    error = ModelState.Values.SelectMany(v => v.Errors).ToList().Select(er => er.ErrorMessage),
                     createEventViewModel
-                    ));
+                });
             var eve = _mapper.Map<Event>(createEventViewModel);
+            if (eve.StartDate > (eve.EndDate ?? DateTime.MaxValue))
+                return BadRequest(new
+                {
+                    error = "Дата начала не может быть позже окончания",
+                    createEventViewModel
+                });
             await _eventRepository.CreateAsync(eve);
             var vm = _mapper.Map<EventViewModel>(eve);
             foreach (var user in vm.Likes)
@@ -76,10 +84,28 @@ namespace UrbanFiesta.Controllers
 
         [HttpPut]
         [Exist<Event>(pathToId: "updateEventViewModel.Id")]
-        public async Task<IActionResult> UpdateEvent([FromBody] UpdateEventViewModel updateEventViewModel)
+        public async Task<IActionResult> UpdateEvent([FromBody] CommandEventViewModel updateEventViewModel)
         {
             var eve = await _eventRepository.GetByIdAsync(updateEventViewModel.Id, asTracking: true);
             _mapper.Map(updateEventViewModel, eve);
+            if (eve.StartDate > (eve.EndDate ?? DateTime.MaxValue))
+                return BadRequest(new
+                {
+                    error = "Дата начала не может быть позже окончания",
+                    updateEventViewModel
+                });
+            await _eventRepository.UpdateAsync(eve);
+            var vm = _mapper.Map<EventViewModel>(eve);
+            return Ok(vm);
+        }
+
+        [HttpPost("{eventId:int}")]
+        [Exist<Event>(pathToId: "eventId")]
+        public async Task<IActionResult> FinishEvent(int eventId)
+        {
+            var eve = await _eventRepository.GetByIdAsync(eventId, asTracking: true);
+            eve.Status = EventStatus.Passed;
+            eve.EndDate = DateTime.UtcNow;
             await _eventRepository.UpdateAsync(eve);
             var vm = _mapper.Map<EventViewModel>(eve);
             return Ok(vm);

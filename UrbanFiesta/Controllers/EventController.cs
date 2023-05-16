@@ -1,5 +1,6 @@
 ﻿
 using AutoMapper;
+using Entities.Enums;
 using Entities.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -52,6 +53,28 @@ namespace UrbanFiesta.Controllers
             var eve = await _eventRepository.GetByIdAsync(id);
             var vm = _mapper.Map<EventViewModel>(eve);
             return Ok(vm);
+        }
+
+        [HttpGet("{date:datetime}")]
+        public async Task<IActionResult> GetByDate(DateTime date, bool sortByLikes = false)
+        {
+            var events = await _eventRepository.GetAllAsync(eve => eve.StartDate.Date == date);
+            if (sortByLikes)
+                events = events.OrderByDescending(eve => eve.Likes.Count).ToList();
+            var vms = _mapper.Map<ICollection<EventViewModel>>(events);
+            return Ok(vms);
+        }
+
+        [HttpGet("{count:int}")]
+        public async Task<IActionResult> GetTop(int count)
+        {
+            if (count < 0) 
+                return BadRequest("count должен быть больше либо равен 0");
+
+            var events = await _eventRepository.GetAllAsync(eve => eve.Status != EventStatus.Passed);
+            events = events.OrderByDescending(eve => eve.Likes.Count).Where(eve => eve.Likes.Count != 0).Take(count).ToList();
+            var vms = _mapper.Map<ICollection<EventViewModel>>(events);
+            return Ok(vms);
         }
 
         [Authorize(Policy = "NotBanned")]

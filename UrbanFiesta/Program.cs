@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using UrbanFiesta.Mapper;
 using UrbanFiesta.Repository;
 using UrbanFiesta.Requirements;
+using UrbanFiesta.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +19,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<DataSeeder>();
 builder.Services.AddScoped<EventRepository>();
-
+builder.Services.AddHostedService<EventsStatusUpdateService>();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("NotBanned", policy =>
@@ -75,7 +76,8 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 app.UseCors(builder => builder
-    .WithOrigins(Environment.GetEnvironmentVariable("ORIGIN"))
+    .WithOrigins(
+        Environment.GetEnvironmentVariable("ORIGIN")?? "")
     .AllowCredentials()
     .AllowAnyHeader()
     .AllowAnyMethod()
