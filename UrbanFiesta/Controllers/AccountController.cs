@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using UrbanFiesta.Filters;
 using UrbanFiesta.Models.Citizen;
 
 namespace UrbanFiesta.Controllers
@@ -25,14 +26,9 @@ namespace UrbanFiesta.Controllers
         }
 
         [HttpPost]
+        [ModelStateIsValid(model: "createCitizenViewModel")]
         public async Task<IActionResult> Register([FromBody] CreateCitizenViewModel createCitizenViewModel)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new
-                {
-                    error = ModelState.Values.SelectMany(v => v.Errors).ToList().Select(er => er.ErrorMessage),
-                    createCitizenViewModel
-                });
             var user = _mapper.Map<Citizen>(createCitizenViewModel);
             var result = await _userManager.CreateAsync(user, createCitizenViewModel.Password);
             if (!result.Succeeded)
@@ -49,9 +45,9 @@ namespace UrbanFiesta.Controllers
         }
 
         [HttpPost]
+        [ModelStateIsValid(model: "loginCitizenViewModel")]
         public async Task<IActionResult> Login([FromBody] LoginCitizenViewModel loginCitizenViewModel)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState.Values);
             var user = await _userManager.FindByNameAsync(loginCitizenViewModel.Email);
             if (user == null) return BadRequest("Неправильный логин или пароль");
             var result = await _signInManager.PasswordSignInAsync(
@@ -76,6 +72,7 @@ namespace UrbanFiesta.Controllers
 
         [Authorize]
         [HttpPut]
+        [ModelStateIsValid(model: "editCitizenViewModel")]
         public async Task<IActionResult> Edit([FromBody] EditCitizenViewModel editCitizenViewModel)
         {
             var user = await _userManager.GetUserAsync(User);

@@ -27,14 +27,9 @@ namespace UrbanFiesta.Controllers
         }
 
         [HttpPost]
+        [ModelStateIsValid(model: "createEventViewModel")]
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventViewModel createEventViewModel)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new
-                {
-                    error = ModelState.Values.SelectMany(v => v.Errors).ToList().Select(er => er.ErrorMessage),
-                    createEventViewModel
-                });
             var eve = _mapper.Map<Event>(createEventViewModel);
             if (eve.StartDate > (eve.EndDate ?? DateTime.MaxValue))
                 return BadRequest(new
@@ -57,6 +52,8 @@ namespace UrbanFiesta.Controllers
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
                 return BadRequest($"Пользователь с email {email} не найден");
+            if ((await _userManager.GetRolesAsync(user)).Contains("admin"))
+                return BadRequest("Нельзя заблокировать администратора");
             user.IsBanned = true;
             await _userManager.UpdateAsync(user);
 
@@ -74,7 +71,7 @@ namespace UrbanFiesta.Controllers
             return Ok($"Пользователь с email {email} разбанен");
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{eventId:int}")]
         [Exist<Event>(pathToId: "eventId")]
         public async Task<IActionResult> UpdateEvent(int eventId)
         {
@@ -83,8 +80,8 @@ namespace UrbanFiesta.Controllers
         }
 
         [HttpPut]
-        [Exist<Event>(pathToId: "updateEventViewModel.Id")]
-        public async Task<IActionResult> UpdateEvent([FromBody] CommandEventViewModel updateEventViewModel)
+        [ModelStateIsValid(model: "updateEventViewModel"), Exist<Event>(pathToId: "updateEventViewModel.Id")]
+        public async Task<IActionResult> UpdateEvent([FromBody] UpdateEventViewModel updateEventViewModel)
         {
             var eve = await _eventRepository.GetByIdAsync(updateEventViewModel.Id, asTracking: true);
             _mapper.Map(updateEventViewModel, eve);

@@ -6,5 +6,7 @@ namespace UrbanFiesta.Models.Event
 {
     public class UpdateEventViewModel: CommandEventViewModel
     {
+        [Required]
+        public int Id { get; set; }
     }
 }

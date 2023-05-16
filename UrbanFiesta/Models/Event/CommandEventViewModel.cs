@@ -5,9 +5,6 @@ namespace UrbanFiesta.Models.Event
 {
     public class CommandEventViewModel
     {
-        [Required]
-        public int Id { get; set; }
-
         [Required(AllowEmptyStrings = false)]
         public string Title { get; set; }
 

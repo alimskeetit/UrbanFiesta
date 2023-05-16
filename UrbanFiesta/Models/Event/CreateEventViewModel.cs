@@ -7,7 +7,5 @@ namespace UrbanFiesta.Models.Event
 {
     public class CreateEventViewModel: CommandEventViewModel
     {
-        [JsonIgnore]
-        public new int Id { get; set; }
     }
 }

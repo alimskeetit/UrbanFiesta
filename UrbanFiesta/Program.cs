@@ -34,8 +34,7 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddScoped(provider => new MapperConfiguration(cfg =>
 {
     cfg.AddProfile(new AppMappingProfile(
-        provider.GetService<AppDbContext>(),
-        provider.GetService<UserManager<Citizen>>()));
+        provider.GetRequiredService<AppDbContext>()));
 }).CreateMapper());
 builder.Services.AddIdentity<Citizen, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
