@@ -55,7 +55,7 @@ namespace UrbanFiesta.Controllers
             return Ok(vm);
         }
 
-        [HttpGet("{date:datetime}")]
+        [HttpGet("{date:datetime}/{sortByLikes:bool}")]
         public async Task<IActionResult> GetByDate(DateTime date, bool sortByLikes = false)
         {
             var events = await _eventRepository.GetAllAsync(eve => eve.StartDate.Date == date);
