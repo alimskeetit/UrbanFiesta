@@ -74,7 +74,7 @@ namespace UrbanFiesta.Controllers
             return Ok($"Пользователь с email {email} разбанен");
         }
 
-        [HttpGet]
+        [HttpGet("{id:int}")]
         [Exist<Event>(pathToId: "eventId")]
         public async Task<IActionResult> UpdateEvent(int eventId)
         {
