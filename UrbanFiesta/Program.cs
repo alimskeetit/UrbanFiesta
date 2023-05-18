@@ -19,7 +19,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<DataSeeder>();
 builder.Services.AddScoped<EventRepository>();
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddHostedService<EventsStatusUpdateService>();
+builder.Services.AddHostedService<EventReminder>();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("NotBanned", policy =>

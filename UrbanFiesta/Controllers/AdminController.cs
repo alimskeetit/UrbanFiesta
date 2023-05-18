@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using UrbanFiesta.Filters;
+using UrbanFiesta.Models;
 using UrbanFiesta.Models.Event;
 using UrbanFiesta.Repository;
+using UrbanFiesta.Services;
 
 namespace UrbanFiesta.Controllers
 {
@@ -18,15 +20,17 @@ namespace UrbanFiesta.Controllers
         private readonly UserManager<Citizen> _userManager;
         private readonly EventRepository _eventRepository;
         private readonly IMapper _mapper;
+        private readonly EmailService _emailService;
 
-        public AdminController(UserManager<Citizen> userManager, EventRepository eventRepository, IMapper mapper)
+        public AdminController(UserManager<Citizen> userManager, EventRepository eventRepository, IMapper mapper, EmailService emailService)
         {
             _userManager = userManager;
             _eventRepository = eventRepository;
             _mapper = mapper;
+            _emailService = emailService;
         }
 
-        [HttpPost]
+        [HttpPost("")]
         [ModelStateIsValid(model: "createEventViewModel")]
         public async Task<IActionResult> CreateEvent([FromBody] CreateEventViewModel createEventViewModel)
         {
@@ -44,6 +48,15 @@ namespace UrbanFiesta.Controllers
                 user.Roles = _userManager.GetRolesAsync(await _userManager.FindByIdAsync(user.Id)).GetAwaiter().GetResult().ToArray();
             }
             return Ok(vm);
+        }
+
+        [HttpPost]
+        public async Task SendNewsletterToCitizens([FromBody] MessageToCitizens messageToCitizens)
+        {
+            await _emailService.SendEmailToSubscribersByAdministrationAsync(
+                subject: messageToCitizens.Subject,
+                message: messageToCitizens.Message,
+                emails: messageToCitizens.Emails);
         }
 
         [HttpPost("{email}")]
@@ -108,7 +121,7 @@ namespace UrbanFiesta.Controllers
             return Ok(vm);
         }
 
-        [HttpDelete]
+        [HttpDelete("{eventId:int}")]
         [Exist<Event>(pathToId: "eventId")]
         public async Task<IActionResult> Delete(int eventId)
         {

@@ -71,6 +71,15 @@ namespace UrbanFiesta.Controllers
         }
 
         [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Edit()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var vm = _mapper.Map<EditCitizenViewModel>(user);
+            return Ok(vm);
+        }
+
+        [Authorize]
         [HttpPut]
         [ModelStateIsValid(model: "editCitizenViewModel")]
         public async Task<IActionResult> Edit([FromBody] EditCitizenViewModel editCitizenViewModel)
@@ -115,5 +124,24 @@ namespace UrbanFiesta.Controllers
             vm.Roles = _userManager.GetRolesAsync(user).GetAwaiter().GetResult().ToArray();
             return Ok(vm);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SubscribeToNewsletter()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            user.IsSubscribed = true;
+            await _userManager.UpdateAsync(user);
+            return Ok("Вы подписаны на рассылку");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UnsubscribeToNewsletter()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            user.IsSubscribed = false;
+            await _userManager.UpdateAsync(user);
+            return Ok("Вы отписаны от рассылки");
+        }
+
     }
 }

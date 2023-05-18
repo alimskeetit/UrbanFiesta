@@ -28,7 +28,7 @@ namespace UrbanFiesta.Services
             _context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var currentTime = DateTime.UtcNow.ToLocalTime();
             var eventsStarted = _context.Events
-                .Where(eve => eve.StartDate <= currentTime && eve.EndDate != null).ToList();
+                .Where(eve => eve.StartDate <= currentTime && eve.EndDate != null);
             foreach (var eve in eventsStarted)
             {
                 eve.Status = EventStatus.Started;
@@ -40,8 +40,6 @@ namespace UrbanFiesta.Services
             {
                 eve.Status = EventStatus.Passed;
             }
-
-
             _context.SaveChanges();
         }
 

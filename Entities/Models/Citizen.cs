@@ -20,5 +20,6 @@ namespace Entities.Models
         public bool IsBanned { get; set; }
         [NotMapped]
         public string[] Roles { get; set; }
+        public bool IsSubscribed { get; set; } 
     }
 }
