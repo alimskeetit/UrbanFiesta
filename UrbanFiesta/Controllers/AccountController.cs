@@ -128,7 +128,7 @@ namespace UrbanFiesta.Controllers
                 toAddress: emailForNewsLetter.Email,
                 subject: "Подтверждение подписки на рассылку",
                 message: $"Код подтверждения этой почты для получения рассылок: {code}");
-            return Ok($"Письмо с кодом для подтверждения отправлено на почту {emailForNewsLetter}");
+            return Ok($"Письмо с кодом для подтверждения отправлено на почту {emailForNewsLetter.Email}");
         }
 
         [HttpPost]
