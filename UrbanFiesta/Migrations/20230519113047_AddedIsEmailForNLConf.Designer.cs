@@ -3,6 +3,7 @@ using System;
 using Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace UrbanFiesta.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230519113047_AddedIsEmailForNLConf")]
+    partial class AddedIsEmailForNLConf
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,11 +51,6 @@ namespace UrbanFiesta.Migrations
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("CodeForConfirmEmailForNewsletter")
-                        .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("character varying(6)");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
@@ -74,6 +72,10 @@ namespace UrbanFiesta.Migrations
 
                     b.Property<bool>("IsBanned")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("IsEmailForNewsletterConfirmed")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsSubscribed")
                         .HasColumnType("boolean");

@@ -33,13 +33,15 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("UrbanFiesta")));
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 builder.Services.AddScoped(provider => new MapperConfiguration(cfg =>
 {
     cfg.AddProfile(new AppMappingProfile(
         provider.GetRequiredService<AppDbContext>()));
 }).CreateMapper());
 builder.Services.AddIdentity<Citizen, IdentityRole>()
-    .AddEntityFrameworkStores<AppDbContext>();
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {

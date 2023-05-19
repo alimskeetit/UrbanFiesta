@@ -2,11 +2,13 @@
 
 namespace UrbanFiesta.Models.Citizen
 {
-    public class ChangePasswordViewModel
+    public class ResetPasswordViewModel
     {
         [Required]
-        public string CurrentPassword { get; set; }
+        public string Email { get; set; }
         [Required]
         public string NewPassword { get; set; }
+        [Required]
+        public string Token { get; set; }
     }
 }

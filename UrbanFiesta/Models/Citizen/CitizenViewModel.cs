@@ -14,7 +14,8 @@ namespace UrbanFiesta.Models.Citizen
         public DateTime BirthDate { get; set; }
         public string[] Roles { get; set; }
         public bool IsSubscribed { get; set; }
-
+        public bool EmailConfirmed { get; set; }
+        public string EmailForNewsletter { get; set; }
         public ICollection<EventViewModel>? LikedEvents { get; set; }
     }
 }
