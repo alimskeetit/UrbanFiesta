@@ -111,7 +111,7 @@ namespace UrbanFiesta.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubscribeToNewsletter([EmailAddress] string emailForNewsLetter)
+        public async Task<IActionResult> SubscribeToNewsletter([EmailAddress, FromBody] string emailForNewsLetter)
         {
             if (!ModelState.IsValid) return BadRequest();
             var user = await _userManager.GetUserAsync(User);
@@ -131,7 +131,7 @@ namespace UrbanFiesta.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> FinalSubToNewsletter(string emailForNewsLetter, string code)
+        public async Task<IActionResult> FinalSubToNewsletter([EmailAddress, FromBody] string emailForNewsLetter, [FromBody] string code)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user.CodeForConfirmEmailForNewsletter != code)
@@ -167,7 +167,7 @@ namespace UrbanFiesta.Controllers
 
         [HttpGet] 
         [Exist<Citizen>(pathToId: "userId")]
-        public async Task<IActionResult> FinalConfirmEmail(string userId, string token)
+        public async Task<IActionResult> FinalConfirmEmail([FromBody] string userId, [FromBody] string token)
         {
             var user = await _userManager.FindByIdAsync(userId);
             var result = await _userManager.ConfirmEmailAsync(user, token);
