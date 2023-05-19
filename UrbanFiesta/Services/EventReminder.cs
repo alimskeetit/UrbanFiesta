@@ -34,7 +34,7 @@ namespace UrbanFiesta.Services
                 return;
             var emails = citizenAndLikedEvents.Select(citizenEvent => new object[]
                 {
-                    citizenEvent.Citizen.Email,
+                    citizenEvent.Citizen.EmailForNewsletter,
                     $"Здравствуйте, {citizenEvent.Citizen.FirstName}! " +
                     $"Уведомляем Вас о том, что скоро начнется мероприятие {citizenEvent.Event.Title}, " +
                     $"которое пройдет {citizenEvent.Event.StartDate.Date} в {citizenEvent.Event.StartDate.TimeOfDay} " +

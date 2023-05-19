@@ -98,7 +98,7 @@ namespace UrbanFiesta.Services
                     .Select(user =>
                         new object[]
                         {
-                            user.Email,
+                            user.EmailForNewsletter,
                             message
                         }).ToArray(),
                 subject: subject);
