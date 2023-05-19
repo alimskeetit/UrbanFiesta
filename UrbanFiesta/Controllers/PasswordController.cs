@@ -73,9 +73,9 @@ namespace UrbanFiesta.Controllers
                 });
         }
 
-        [HttpPost]
+        [HttpPut]
         [ModelStateIsValid(model: "changePasswordViewModel")]
-        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel changePasswordViewModel)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordViewModel changePasswordViewModel)
         {
             var user = await _userManager.GetUserAsync(User);
             var result = await _userManager.ChangePasswordAsync(
