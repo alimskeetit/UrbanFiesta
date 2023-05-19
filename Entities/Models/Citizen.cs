@@ -14,9 +14,9 @@ namespace Entities.Models
         public bool IsBanned { get; set; }
         [NotMapped]
         public string[] Roles { get; set; }
-        public string EmailForNewsletter { get; set; }
+        public string? EmailForNewsletter { get; set; }
         [MaxLength(6)]
-        public string CodeForConfirmEmailForNewsletter { get; set; } 
+        public string? CodeForConfirmEmailForNewsletter { get; set; } 
         public bool IsSubscribed { get; set; } 
     }
 }
