@@ -138,6 +138,7 @@ namespace UrbanFiesta.Controllers
             if (user.CodeForConfirmEmailForNewsletter != emailForNewsLetter.Code)
                 return BadRequest("Неверный код");
             user.EmailForNewsletter = emailForNewsLetter.Email;
+            user.IsSubscribed = true;
             await _userManager.UpdateAsync(user);
             return Ok("Вы подписаны на рассылку");
         }
