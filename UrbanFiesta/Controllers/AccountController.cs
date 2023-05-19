@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using UrbanFiesta.Filters;
+using UrbanFiesta.Models;
 using UrbanFiesta.Models.Citizen;
 using UrbanFiesta.Services;
 
@@ -111,11 +112,11 @@ namespace UrbanFiesta.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubscribeToNewsletter([EmailAddress, FromBody] string emailForNewsLetter)
+        public async Task<IActionResult> SubscribeToNewsletter([FromBody] EmailViewModel emailForNewsLetter)
         {
             if (!ModelState.IsValid) return BadRequest();
             var user = await _userManager.GetUserAsync(User);
-            if (emailForNewsLetter == user.Email && user.EmailConfirmed)
+            if (emailForNewsLetter.Email == user.Email && user.EmailConfirmed)
             {
                 user.IsSubscribed = true;
                 return Ok("Вы подписаны на рассылку");
@@ -124,19 +125,19 @@ namespace UrbanFiesta.Controllers
             user.CodeForConfirmEmailForNewsletter = code.ToString();
             await _userManager.UpdateAsync(user);
             await _emailService.SendEmailAsyncByAdministration(
-                toAddress: emailForNewsLetter,
+                toAddress: emailForNewsLetter.Email,
                 subject: "Подтверждение подписки на рассылку",
                 message: $"Код подтверждения этой почты для получения рассылок: {code}");
             return Ok($"Письмо с кодом для подтверждения отправлено на почту {emailForNewsLetter}");
         }
 
         [HttpPost]
-        public async Task<IActionResult> FinalSubToNewsletter([EmailAddress, FromBody] string emailForNewsLetter, [FromBody] string code)
+        public async Task<IActionResult> FinalSubToNewsletter([FromBody] FinalSubToNewsLetterViewModel emailForNewsLetter)
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user.CodeForConfirmEmailForNewsletter != code)
+            if (user.CodeForConfirmEmailForNewsletter != emailForNewsLetter.Code)
                 return BadRequest("Неверный код");
-            user.EmailForNewsletter = emailForNewsLetter;
+            user.EmailForNewsletter = emailForNewsLetter.Email;
             await _userManager.UpdateAsync(user);
             return Ok("Вы подписаны на рассылку");
         }
@@ -167,10 +168,10 @@ namespace UrbanFiesta.Controllers
 
         [HttpGet] 
         [Exist<Citizen>(pathToId: "userId")]
-        public async Task<IActionResult> FinalConfirmEmail([FromBody] string userId, [FromBody] string token)
+        public async Task<IActionResult> FinalConfirmEmail([FromBody]FinalConfirmEmailViewModel viewModel)
         {
-            var user = await _userManager.FindByIdAsync(userId);
-            var result = await _userManager.ConfirmEmailAsync(user, token);
+            var user = await _userManager.FindByIdAsync(viewModel.UserId);
+            var result = await _userManager.ConfirmEmailAsync(user, viewModel.Token);
             return result.Succeeded ? Ok("Почта подтверждена") : BadRequest("Ошибка");
         }
     }
