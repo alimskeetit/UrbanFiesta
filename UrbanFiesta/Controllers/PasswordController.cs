@@ -36,22 +36,8 @@ namespace UrbanFiesta.Controllers
                 subject: "Смена пароля",
                 message:
                 $"Для сброса пароля пройдите по ссылке: https://localhost:7099/ConfirmChangePassword?userEmail={user.Email}&token={Uri.EscapeDataString(token)}");
-            return Ok(new[] { "Письмо с ссылкой на смену пароля отправлено Вам на почту", token });
-        }
-
-        [AllowAnonymous]
-        [HttpGet]
-        [ModelStateIsValid(model: "email")]
-        public async Task<IActionResult> ConfirmChangePassword([EmailAddress] string userEmail, string token)
-        {
-            var user = await _userManager.FindByEmailAsync(userEmail);
-            if (user == null) return BadRequest($"Пользователь с email {userEmail} не найден");
-            var tokenIsValid = await _userManager.VerifyUserTokenAsync(
-                user,
-                _userManager.Options.Tokens.PasswordResetTokenProvider,
-                "ResetPassword",
-                token);
-            return tokenIsValid ? Ok("Токен валиден") : BadRequest("Токен невалиден");
+            return Ok(new [] {
+                    "Письмо с ссылкой на смену пароля отправлено Вам на почту", token});
         }
 
         [AllowAnonymous]

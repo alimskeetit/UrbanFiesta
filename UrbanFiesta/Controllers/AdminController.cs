@@ -46,7 +46,7 @@ namespace UrbanFiesta.Controllers
             return Ok(vm);
         }
 
-        [HttpGet("{eventId:int}")]
+        [HttpGet]
         [Exist<Event>(pathToId: "eventId")]
         public async Task<IActionResult> UpdateEvent(int eventId)
         {
@@ -55,7 +55,8 @@ namespace UrbanFiesta.Controllers
         }
 
         [HttpPut]
-        [ModelStateIsValid(model: "updateEventViewModel"), Exist<Event>(pathToId: "updateEventViewModel.Id")]
+        [ModelStateIsValid(model: "updateEventViewModel"), 
+         Exist<Event>(pathToId: "updateEventViewModel.Id")]
         public async Task<IActionResult> UpdateEvent([FromBody] UpdateEventViewModel updateEventViewModel)
         {
             var eve = await _eventRepository.GetByIdAsync(updateEventViewModel.Id, asTracking: true);
@@ -71,7 +72,7 @@ namespace UrbanFiesta.Controllers
             return Ok(vm);
         }
 
-        [HttpPost("{eventId:int}")]
+        [HttpPost]
         [Exist<Event>(pathToId: "eventId")]
         public async Task<IActionResult> FinishEvent(int eventId)
         {
@@ -83,9 +84,9 @@ namespace UrbanFiesta.Controllers
             return Ok(vm);
         }
 
-        [HttpDelete("{eventId:int}")]
+        [HttpDelete]
         [Exist<Event>(pathToId: "eventId")]
-        public async Task<IActionResult> Delete(int eventId)
+        public async Task<IActionResult> DeleteEvent(int eventId)
         {
             await _eventRepository.DeleteByIdAsync(eventId);
             return Ok();
@@ -100,7 +101,7 @@ namespace UrbanFiesta.Controllers
                 emails: messageToCitizens.Emails);
         }
 
-        [HttpPost("{email}")]
+        [HttpPost]
         public async Task<IActionResult> BanUser(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -114,7 +115,7 @@ namespace UrbanFiesta.Controllers
             return Ok($"Пользователь с email {email} забанен");
         }
 
-        [HttpPost("{email}")]
+        [HttpPost]
         public async Task<IActionResult> UnbanUser(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);

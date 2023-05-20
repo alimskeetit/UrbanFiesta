@@ -77,7 +77,7 @@ namespace UrbanFiesta.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit()
+        public async Task<IActionResult> EditAccount()
         {
             var user = await _userManager.GetUserAsync(User);
             var vm = _mapper.Map<EditCitizenViewModel>(user);
@@ -86,7 +86,7 @@ namespace UrbanFiesta.Controllers
 
         [HttpPut]
         [ModelStateIsValid(model: "editCitizenViewModel")]
-        public async Task<IActionResult> Edit([FromBody] EditCitizenViewModel editCitizenViewModel)
+        public async Task<IActionResult> EditAccount([FromBody] EditCitizenViewModel editCitizenViewModel)
         {
             var user = await _userManager.GetUserAsync(User);
             _mapper.Map(editCitizenViewModel, user);
@@ -103,7 +103,7 @@ namespace UrbanFiesta.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> About()
+        public async Task<IActionResult> AboutAccount()
         {
             var user = await _userManager.GetUserAsync(User);
             var vm = _mapper.Map<CitizenViewModel>(user);
@@ -112,32 +112,34 @@ namespace UrbanFiesta.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SubscribeToNewsletter([FromBody] EmailViewModel emailForNewsLetter)
+        public async Task<IActionResult> SubscribeToNewsletter(string email)
         {
             if (!ModelState.IsValid) return BadRequest();
             var user = await _userManager.GetUserAsync(User);
-            if (emailForNewsLetter.Email == user.Email && user.EmailConfirmed)
+            if (email == user.Email && user.EmailConfirmed)
             {
                 user.IsSubscribed = true;
                 return Ok("Вы подписаны на рассылку");
             }
             var code = new Random().Next(100000, 999999);
+            user.EmailForNewsletter = email;
             user.CodeForConfirmEmailForNewsletter = code.ToString();
             await _userManager.UpdateAsync(user);
             await _emailService.SendEmailAsyncByAdministration(
-                toAddress: emailForNewsLetter.Email,
+                toAddress: email,
                 subject: "Подтверждение подписки на рассылку",
                 message: $"Код подтверждения этой почты для получения рассылок: {code}");
-            return Ok($"Письмо с кодом для подтверждения отправлено на почту {emailForNewsLetter.Email}");
+            return Ok($"Письмо с кодом для подтверждения отправлено на почту {email}");
         }
 
         [HttpPost]
-        public async Task<IActionResult> FinalSubToNewsletter([FromBody] FinalSubToNewsLetterViewModel emailForNewsLetter)
+        public async Task<IActionResult> FinalSubToNewsletter(string email, string code)
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user.CodeForConfirmEmailForNewsletter != emailForNewsLetter.Code)
+            if (user.CodeForConfirmEmailForNewsletter != code)
                 return BadRequest("Неверный код");
-            user.EmailForNewsletter = emailForNewsLetter.Email;
+            if (user.EmailForNewsletter != email)
+                return BadRequest("Не совпадают почта для подтверждения и переданная почта ");
             user.IsSubscribed = true;
             await _userManager.UpdateAsync(user);
             return Ok("Вы подписаны на рассылку");
@@ -169,10 +171,10 @@ namespace UrbanFiesta.Controllers
 
         [HttpGet] 
         [Exist<Citizen>(pathToId: "userId")]
-        public async Task<IActionResult> FinalConfirmEmail([FromBody]FinalConfirmEmailViewModel viewModel)
+        public async Task<IActionResult> FinalConfirmEmail(string userId, string token)
         {
-            var user = await _userManager.FindByIdAsync(viewModel.UserId);
-            var result = await _userManager.ConfirmEmailAsync(user, viewModel.Token);
+            var user = await _userManager.FindByIdAsync(userId);
+            var result = await _userManager.ConfirmEmailAsync(user, token);
             return result.Succeeded ? Ok("Почта подтверждена") : BadRequest("Ошибка");
         }
     }

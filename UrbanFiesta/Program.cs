@@ -47,24 +47,13 @@ builder.Services.Configure<IdentityOptions>(options =>
 {
     options.User.RequireUniqueEmail = true;
     //password's settings
-    if (builder.Configuration.GetRequiredSection("ASPNETCORE_ENVIRONMENT").ToString() == "Development")
-    {
-        options.Password.RequireDigit = true;
-        options.Password.RequireLowercase = false;
-        options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequireUppercase = false;
-        options.Password.RequiredLength = 3;
-        options.Password.RequiredUniqueChars = 0;
-    }
-    else
-    {
-        options.Password.RequireDigit = true;
-        options.Password.RequireLowercase = false;
-        options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequireUppercase = false;
-        options.Password.RequiredLength = 6;
-        options.Password.RequiredUniqueChars = 0;
-    }
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 3;
+    options.Password.RequiredUniqueChars = 0;
+
 });
 
 builder.Services.AddCors();

@@ -28,35 +28,33 @@ namespace UrbanFiesta.Controllers
             _userManager = userManager;
         }
 
-        [HttpGet("{count:int}/{page:int}/{sortByDate:bool}")]
-        public async Task<IActionResult> Get(bool sortByDate = true, int count = 0, int page = 0)
+        [HttpGet]
+        public async Task<IActionResult> GetEvents(int count = 0, int page = 0, bool sortByDate = true)
         {
             if (count < 0) return BadRequest("count должен быть >= 0");
             if (page == 0) page = 1;
             var events = await _eventRepository.GetAllAsync();
             if (sortByDate)
                 events = events.OrderBy(eve => eve.StartDate).ToList();
-            var vms = _mapper.Map<ICollection<EventViewModel>>(
-                (page < 0
-                    ? events.Reverse()
-                    : events)
+            if (page < 0)
+                events = events.Reverse().ToList();
+            var vms = _mapper.Map<ICollection<EventViewModel>>(events
                 .Skip((int.Abs(page) - 1) * count)
                 .Take(count).ToList());
             return Ok(vms);
         }
 
-
-        [HttpGet("{id:int}")]
-        [Exist<Event>]
-        public async Task<IActionResult> Get(int id)
+        [HttpGet]
+        [Exist<Event>(pathToId: "eventId")]
+        public async Task<IActionResult> GetEvent(int eventId)
         {
-            var eve = await _eventRepository.GetByIdAsync(id);
+            var eve = await _eventRepository.GetByIdAsync(eventId);
             var vm = _mapper.Map<EventViewModel>(eve);
             return Ok(vm);
         }
 
-        [HttpGet("{date:datetime}/{sortByLikes:bool}")]
-        public async Task<IActionResult> GetByDate(DateTime date, bool sortByLikes = false)
+        [HttpGet]
+        public async Task<IActionResult> GetEventByDate(DateTime date, bool sortByLikes = false)
         {
             var events = await _eventRepository.GetAllAsync(eve => eve.StartDate.Date == date);
             if (sortByLikes)
@@ -65,8 +63,8 @@ namespace UrbanFiesta.Controllers
             return Ok(vms);
         }
 
-        [HttpGet("{count:int}")]
-        public async Task<IActionResult> GetTop(int count)
+        [HttpGet]
+        public async Task<IActionResult> GetTopEvents(int count)
         {
             if (count < 0) 
                 return BadRequest("count должен быть больше либо равен 0");
@@ -78,9 +76,9 @@ namespace UrbanFiesta.Controllers
         }
 
         [Authorize(Policy = "NotBanned")]
-        [HttpPost("{eventId:int}")]
+        [HttpPost]
         [Exist<Event>(pathToId: "eventId")]
-        public async Task<IActionResult> Like(int eventId)
+        public async Task<IActionResult> LikeEvent(int eventId)
         {
             var eve = await _eventRepository.GetByIdAsync(eventId, asTracking: true);
             var citizen = await _userManager.GetUserAsync(User);
@@ -92,9 +90,9 @@ namespace UrbanFiesta.Controllers
         }
 
         [Authorize(Policy = "NotBanned")]
-        [HttpPost("{eventId:int}")]
+        [HttpPost]
         [Exist<Event>(pathToId: "eventId")]
-        public async Task<IActionResult> RemoveLike(int eventId)
+        public async Task<IActionResult> RemoveLikeFromEvent(int eventId)
         {
             var eve = await _eventRepository.GetByIdAsync(eventId, asTracking: true);
             var citizen = await _userManager.GetUserAsync(User);
