@@ -22,6 +22,7 @@ namespace Entities.Models
         public DateTime? EndDate { get; set; }
         public string Coordinates { get; set; }
         public string? PosterUrl { get; set; }
+        public string? StreamUrl { get; set; }
         public EventStatus Status { get; set; }
         
         public ICollection<Citizen>? Likes { get; set; }

@@ -22,5 +22,6 @@ namespace UrbanFiesta.Models.Event
         [Required] 
         public double[] Coordinates { get; set; }
         public string PosterUrl { get; set; }
+        public string StreamUrl { get; set; }
     }
 }

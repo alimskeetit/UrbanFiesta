@@ -16,6 +16,7 @@ namespace UrbanFiesta.Models.Event
         public string Status { get; set; }
         public double[] Coordinates { get; set; }
         public string PosterUrl { get; set; }
+        public string StreamUrl { get; set; }
         public ICollection<CitizenViewModelIgnoreLikedEvents>? Likes { get; set; }
     }
 }
