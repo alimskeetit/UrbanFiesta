@@ -93,8 +93,7 @@ namespace UrbanFiesta.Services
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             await SendEmailsAsyncByAdministration(
                 emails: context.Users
-                    .Where(user => user.IsSubscribed 
-                                   )
+                    .Where(user => user.IsSubscribed && !user.IsBanned && (emails.Contains(user.EmailForNewsletter) || emails.IsNullOrEmpty()))
                     .Select(user =>
                         new object[]
                         {
@@ -103,6 +102,5 @@ namespace UrbanFiesta.Services
                         }).ToArray(),
                 subject: subject);
         }
-
     }
 }

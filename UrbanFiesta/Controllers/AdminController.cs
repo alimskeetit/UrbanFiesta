@@ -13,8 +13,8 @@ using UrbanFiesta.Services;
 
 namespace UrbanFiesta.Controllers
 {
-    [Route("[action]")]
     [Authorize(Roles="admin")]
+    [Route("[action]")]
     public class AdminController: ControllerBase
     {
         private readonly UserManager<Citizen> _userManager;
@@ -43,45 +43,7 @@ namespace UrbanFiesta.Controllers
                 });
             await _eventRepository.CreateAsync(eve);
             var vm = _mapper.Map<EventViewModel>(eve);
-            foreach (var user in vm.Likes)
-            {
-                user.Roles = _userManager.GetRolesAsync(await _userManager.FindByIdAsync(user.Id)).GetAwaiter().GetResult().ToArray();
-            }
             return Ok(vm);
-        }
-
-        [HttpPost]
-        public async Task SendNewsletterToCitizens([FromBody] MessageToCitizens messageToCitizens)
-        {
-            await _emailService.SendEmailToSubscribersByAdministrationAsync(
-                subject: messageToCitizens.Subject,
-                message: messageToCitizens.Message,
-                emails: messageToCitizens.Emails);
-        }
-
-        [HttpPost("{email}")]
-        public async Task<IActionResult> BanUser(string email)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-                return BadRequest($"Пользователь с email {email} не найден");
-            if ((await _userManager.GetRolesAsync(user)).Contains("admin"))
-                return BadRequest("Нельзя заблокировать администратора");
-            user.IsBanned = true;
-            await _userManager.UpdateAsync(user);
-
-            return Ok($"Пользователь с email {email} забанен");
-        }
-
-        [HttpPost("{email}")]
-        public async Task<IActionResult> UnbanUser(string email)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-                return BadRequest($"Пользователь с email {email} не найден");
-            user.IsBanned = false;
-            await _userManager.UpdateAsync(user);
-            return Ok($"Пользователь с email {email} разбанен");
         }
 
         [HttpGet("{eventId:int}")]
@@ -127,6 +89,40 @@ namespace UrbanFiesta.Controllers
         {
             await _eventRepository.DeleteByIdAsync(eventId);
             return Ok();
+        }
+
+        [HttpPost]
+        public async Task SendNewsletterToCitizens([FromBody] MessageToCitizens messageToCitizens)
+        {
+            await _emailService.SendEmailToSubscribersByAdministrationAsync(
+                subject: messageToCitizens.Subject,
+                message: messageToCitizens.Message,
+                emails: messageToCitizens.Emails);
+        }
+
+        [HttpPost("{email}")]
+        public async Task<IActionResult> BanUser(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return BadRequest($"Пользователь с email {email} не найден");
+            if ((await _userManager.GetRolesAsync(user)).Contains("admin"))
+                return BadRequest("Нельзя заблокировать администратора");
+            user.IsBanned = true;
+            await _userManager.UpdateAsync(user);
+
+            return Ok($"Пользователь с email {email} забанен");
+        }
+
+        [HttpPost("{email}")]
+        public async Task<IActionResult> UnbanUser(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return BadRequest($"Пользователь с email {email} не найден");
+            user.IsBanned = false;
+            await _userManager.UpdateAsync(user);
+            return Ok($"Пользователь с email {email} разбанен");
         }
     }
 }

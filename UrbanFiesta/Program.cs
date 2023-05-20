@@ -13,8 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<DataSeeder>();
@@ -32,6 +30,7 @@ builder.Services.AddTransient<IAuthorizationHandler, NotBannedHandler>();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("UrbanFiesta")));
+
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 builder.Services.AddScoped(provider => new MapperConfiguration(cfg =>
@@ -39,19 +38,33 @@ builder.Services.AddScoped(provider => new MapperConfiguration(cfg =>
     cfg.AddProfile(new AppMappingProfile(
         provider.GetRequiredService<AppDbContext>()));
 }).CreateMapper());
+
 builder.Services.AddIdentity<Citizen, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequiredLength = 3;
-    options.Password.RequiredUniqueChars = 0;
     options.User.RequireUniqueEmail = true;
+    //password's settings
+    if (builder.Configuration.GetRequiredSection("ASPNETCORE_ENVIRONMENT").ToString() == "Development")
+    {
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequiredLength = 3;
+        options.Password.RequiredUniqueChars = 0;
+    }
+    else
+    {
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequiredLength = 6;
+        options.Password.RequiredUniqueChars = 0;
+    }
 });
 
 builder.Services.AddCors();
@@ -77,7 +90,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseHttpsRedirection();
 app.UseCors(builder => builder
     .WithOrigins(
         Environment.GetEnvironmentVariable("ORIGIN")?? "")

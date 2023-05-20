@@ -91,6 +91,7 @@ namespace UrbanFiesta.Controllers
             return Ok(vm);
         }
 
+        [Authorize(Policy = "NotBanned")]
         [HttpPost("{eventId:int}")]
         [Exist<Event>(pathToId: "eventId")]
         public async Task<IActionResult> RemoveLike(int eventId)

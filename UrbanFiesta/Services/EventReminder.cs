@@ -59,7 +59,7 @@ namespace UrbanFiesta.Services
                 );
             var recipients =
                 context.Users
-                    .Where(user => user.IsSubscribed)
+                    .Where(user => user.IsSubscribed && !user.IsBanned)
                     .SelectMany(user => user.LikedEvents
                         .Where(likedEve => events.Contains(likedEve))
                         .Select(eve => new CitizenEvent
