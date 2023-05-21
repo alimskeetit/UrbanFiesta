@@ -19,7 +19,7 @@ namespace UrbanFiesta.Mapper
         public AppMappingProfile(AppDbContext context)
         {
             _context = context;
-
+            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
             CreateMap<Citizen, CitizenViewModel>()
                 .ForMember(dest => dest.LikedEvents, opt => opt.MapFrom(src => _context.Entry(src).Collection(c => c.LikedEvents).Query().ToList()))
                 .ReverseMap();

@@ -31,8 +31,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("UrbanFiesta")));
 
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true); 
 builder.Services.AddScoped(provider => new MapperConfiguration(cfg =>
 {
     cfg.AddProfile(new AppMappingProfile(
