@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace UrbanFiesta.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230520200316_AddedStreamUrl")]
-    partial class AddedStreamUrl
+    [Migration("20230521092834_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -169,8 +169,8 @@ namespace UrbanFiesta.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<bool?>("StreamUrl")
-                        .HasColumnType("boolean");
+                    b.Property<string>("StreamUrl")
+                        .HasColumnType("text");
 
                     b.Property<string>("Title")
                         .IsRequired()

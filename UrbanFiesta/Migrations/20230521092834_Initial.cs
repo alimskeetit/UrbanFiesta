@@ -36,6 +36,9 @@ namespace UrbanFiesta.Migrations
                     Patronymic = table.Column<string>(type: "text", nullable: true),
                     BirthDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     IsBanned = table.Column<bool>(type: "boolean", nullable: false),
+                    EmailForNewsletter = table.Column<string>(type: "text", nullable: true),
+                    CodeForConfirmEmailForNewsletter = table.Column<string>(type: "character varying(6)", maxLength: 6, nullable: true),
+                    IsSubscribed = table.Column<bool>(type: "boolean", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -65,10 +68,11 @@ namespace UrbanFiesta.Migrations
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     Address = table.Column<string>(type: "text", nullable: false),
-                    PosterUrl = table.Column<string>(type: "text", nullable: true),
                     StartDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     EndDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     Coordinates = table.Column<string>(type: "text", nullable: false),
+                    PosterUrl = table.Column<string>(type: "text", nullable: true),
+                    StreamUrl = table.Column<string>(type: "text", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>

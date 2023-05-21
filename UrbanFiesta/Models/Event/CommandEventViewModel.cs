@@ -20,8 +20,8 @@ namespace UrbanFiesta.Models.Event
         public string? EndDate { get; set; }
 
         [Required] 
-        public double[] Coordinates { get; set; }
-        public string PosterUrl { get; set; }
-        public string StreamUrl { get; set; }
+        public string[] Coordinates { get; set; }
+        public string? PosterUrl { get; set; }
+        public string? StreamUrl { get; set; }
     }
 }
