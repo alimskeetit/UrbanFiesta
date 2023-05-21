@@ -18,7 +18,6 @@ namespace UrbanFiesta.Filters
         {
             if (!context.ModelState.IsValid)
             {
-                
                 context.Result = new BadRequestObjectResult(new
                 {
                     error = context.ModelState.Values.SelectMany(v => v.Errors).ToList().Select(er => er.ErrorMessage),
