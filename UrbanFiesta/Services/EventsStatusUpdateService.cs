@@ -18,7 +18,7 @@ namespace UrbanFiesta.Services
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(UpdateEventStatus, null, TimeSpan.Zero, TimeSpan.FromSeconds(10)); // Обновление каждые 10 минут
+            _timer = new Timer(UpdateEventStatus, null, TimeSpan.Zero, TimeSpan.FromSeconds(10)); // Обновление каждые 10 секунд
             return Task.CompletedTask;
         }
 
