@@ -94,6 +94,6 @@ app.MapGet("/", async () =>
     var scopedFactory = app.Services.GetService<IServiceScopeFactory>();
     var scope = scopedFactory.CreateScope();
     var context = scope.ServiceProvider.GetService<AppDbContext>();
-    return context.Set<Event>().First();
+    return context.Set<Event>().FirstOrDefault(eve => eve.Title == "asd");
 });
 app.Run();
