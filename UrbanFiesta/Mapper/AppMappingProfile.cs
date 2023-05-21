@@ -37,7 +37,7 @@ namespace UrbanFiesta.Mapper
             CreateMap<Event, EventViewModel>()
                 .ForMember(eveModel => eveModel.Coordinates,
                     opt => opt.MapFrom(eve =>
-                        eve.Coordinates.Split(new[] { '|' }).Select(coord => double.Parse(coord.Replace('.', ','), CultureInfo.CurrentCulture)).ToArray()))
+                        eve.Coordinates.Split(new[] { '|' }).Select(coord => double.Parse(coord, CultureInfo.CurrentCulture)).ToArray()))
                 .ReverseMap()
                 .ForMember(eve => eve.Coordinates,
                     opt => opt.MapFrom(eveModel => string.Join('|', eveModel.Coordinates)));
@@ -45,7 +45,7 @@ namespace UrbanFiesta.Mapper
             CreateMap<Event, CommandEventViewModel>()
                     .ForMember(commandEve => commandEve.Coordinates,
                         opt => opt.MapFrom(eve =>
-                            eve.Coordinates.Split(new[] { '|' }).Select(coord => double.Parse(coord.Replace('.', ','), CultureInfo.CurrentCulture)).ToArray()))
+                            eve.Coordinates.Split(new[] { '|' }).Select(coord => double.Parse(coord, CultureInfo.CurrentCulture)).ToArray()))
                     .ReverseMap()
                     .ForMember(eve => eve.EndDate,
                         opt => opt.MapFrom(commandEve =>
@@ -58,7 +58,7 @@ namespace UrbanFiesta.Mapper
                 CreateMap<Event, UpdateEventViewModel>()
                     .ForMember(commandEve => commandEve.Coordinates,
                         opt => opt.MapFrom(eve =>
-                            eve.Coordinates.Split(new[] { '|' }).Select(coord => double.Parse(coord.Replace('.', ','), CultureInfo.CurrentCulture)).ToArray()));
+                            eve.Coordinates.Split(new[] { '|' }).Select(coord => double.Parse(coord, CultureInfo.CurrentCulture)).ToArray()));
         }
     }
 }
