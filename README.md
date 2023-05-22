@@ -33,4 +33,4 @@
   3. git clone https://github.com/alimskeetit/UrbanFiesta
   4. В папке UrbanFiesta выполняем docker compose up --build
 ## 🌐Как запустить вместе с FrontEnd
-  Инструкция в https://github.com/alimskeetit/RTUITLAB_complete
+  Инструкция в https://github.com/VasilyRazdorsky/RTUITLab_recruit
