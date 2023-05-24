@@ -32,5 +32,6 @@
   2. Запустить DockerDesktop
   3. git clone https://github.com/alimskeetit/UrbanFiesta
   4. В папке UrbanFiesta выполняем docker compose up --build
+  Если возникла ошибка с Postgres, выполнить команду docker compose up --build ещё раз
 ## 🌐Как запустить вместе с FrontEnd
   Инструкция в https://github.com/VasilyRazdorsky/RTUITLab_recruit
